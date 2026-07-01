@@ -172,15 +172,17 @@ PanelWindow {
                             boundsBehavior: Flickable.DragOverBounds
                             maximumFlickVelocity: 3500
                             clip: true
-
-                            spacing: 9
-
+                            // changed spacing to ignore results that have no valid icon image
+                            spacing: (modelData.icon && Utils.AppSearch.getIcon(modelData.icon) !== "") ? 9 : 0
                             delegate: Item {
                                 width: parent.width
-                                height: 48
+                				// changed visibility to hide results that have no valid icon image
+                                visible: (modelData.icon && Utils.AppSearch.getIcon(modelData.icon) !== "")
+                                height: (modelData.icon && Utils.AppSearch.getIcon(modelData.icon) !== "") ? 48 : 0
                                 Rectangle {
                                     width: parent.width
-                                    height: 48
+                                    // changed height rules to ignore results that have no valid icon image
+                                    height: (modelData.icon && Utils.AppSearch.getIcon(modelData.icon) !== "") ? 48 : 0
                                     opacity: 1
                                     anchors.fill: parent
                                     color: Config.colors.base
