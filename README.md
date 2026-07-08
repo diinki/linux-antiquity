@@ -90,6 +90,26 @@ You'll be able to see where to input [open weather map](https://openweathermap.o
 > [!NOTE]
 > I am considering creating a settings tab specifically for setting monitor data in order to reduce the amount of config file editing, do look forward to that!
 
+### Configuring the sidebar & bottom bar 🎛️
+The radial sidebar and bottom bar can be tweaked without touching any qml, in `~/.config/quickshell/settings.json` (the file is created on first run) under `radialBars`:
+
+* `enableSidebar` / `enableBottomBar` — turn either bar off entirely.
+* `raiseOnHover` — set to `false` if you don't want the bars to jump to the front when your mouse touches the screen edge.
+* `monitorOverrides` — override any of the above per monitor, keyed by the monitor names from `hyprctl monitors`.
+
+```json
+"radialBars": {
+    "enableSidebar": true,
+    "enableBottomBar": true,
+    "raiseOnHover": true,
+    "monitorOverrides": {
+        "DP-2": { "enableSidebar": false, "raiseOnHover": false }
+    }
+}
+```
+
+You can also raise/lower both bars with a keybind (`mod` + `B` by default) — see the `toggleBars` command in `~/.config/hypr/hyprland.lua`.
+
 ### Setting quickshell-specific Icon Themes 🎨
 You can find and use your own icon theme but you will need to customize the top lines of code in the `~/.config/quickshell/shell.qml` directory to set the icon theme in the quickshell UI specifically. Namely:
 
@@ -130,6 +150,7 @@ These are just my personal preferences, so feel entirely free to edit them.
 
 - `mod` + `Enter` = launch terminal.
 - `mod` + `D` = open application launcher popup.
+- `mod` + `B` = bring the sidebar & bottom bar to the front, or send them back behind windows.
 - `mod` + `E` = open file explorer launcher popup.
 - `mod` + `[any number, 1-9]` = switch focus to the workspace equivalent to the number.
 - `mod` + `Shift` + ` [any number, 1-9]` = move the focused/hovered window to the workspace equivalent to the number.
