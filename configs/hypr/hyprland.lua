@@ -19,6 +19,10 @@ local fileManager = "nemo"
 -- I know it's a bit messy — I might make this cleaner eventually with built-in quickshell functionality.
 local menu = "quickshell ipc call appLauncher_$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name') toggleAppLauncher"
 
+-- Same focused-monitor dance as above: raises the sidebar and bottom bar to the
+-- front, or sends them back behind the windows again.
+local toggleBars = "m=$(hyprctl monitors -j | jq -r '.[] | select(.focused == true) | .name'); quickshell ipc call sidebar_$m toggle; quickshell ipc call bottombar_$m toggle"
+
 
 --                               AUTOSTART
 -- ██████████████████████████████████████████████████████████████████████████
@@ -191,6 +195,8 @@ hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.window.float({ action = "toggle" }
 hl.bind(mainMod .. " + F",             hl.dsp.window.fullscreen())
 -- mod + D           -> open application launcher
 hl.bind(mainMod .. " + D",             hl.dsp.exec_cmd(menu))
+-- mod + B           -> bring the sidebar & bottom bar to the front / send them back
+hl.bind(mainMod .. " + B",             hl.dsp.exec_cmd(toggleBars))
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move focused window to a workspace with mainMod + SHIFT + [0-9]

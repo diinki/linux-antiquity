@@ -330,6 +330,16 @@ Singleton {
         }
     }
 
+    // Resolves a radialBars setting for a given monitor, a per-monitor override
+    // wins over the defaults in settings.radialBars.
+    function radialBarSetting(monitorName: string, key: string) {
+        var overrides = settings.radialBars.monitorOverrides[monitorName];
+        if (overrides != null && overrides[key] !== undefined) {
+            return overrides[key];
+        }
+        return settings.radialBars[key];
+    }
+
     property bool openSettingsWindow: false
     property alias settings: settingsJsonAdapter.settings
     FileView {
@@ -369,6 +379,19 @@ Singleton {
                     property double workspacePadding: 0.032
                     property int trayIconSize: 12
                     property bool monochromeTrayIcons: true
+                }
+                property JsonObject radialBars: JsonObject {
+                    property bool enableSidebar: true
+                    property bool enableBottomBar: true
+                    // Set to false if you don't want the bars to jump to the front
+                    // when the mouse touches the screen edge.
+                    property bool raiseOnHover: true
+                    // Per-monitor overrides for the settings above, keyed by monitor
+                    // name (see `hyprctl monitors`). Anything left out falls back to
+                    // the defaults, e.g:
+                    // "monitorOverrides": { "DP-2": { "enableSidebar": false } }
+                    // IGNORE WARNING, do not wrap in ()
+                    property var monitorOverrides: ({})
                 }
                 onCurrentThemeChanged: {
                     console.info("Updated theme to: " + currentTheme);

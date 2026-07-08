@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick.Controls.Basic
@@ -19,13 +20,15 @@ Scope {
         Item {
             id: root
             required property var modelData
+            property bool sidebarEnabled: Config.radialBarSetting(modelData.name, "enableSidebar")
+            property bool raiseOnHover: Config.radialBarSetting(modelData.name, "raiseOnHover")
 
             // This is a "tap outside of popup to clise it" functionality. Might abstract it later.
             PanelWindow {
                 id: closerPanel
                 screen: root.modelData
                 WlrLayershell.layer: WlrLayer.Top
-                visible: !radialTaskbar.isOpen && radialTaskbar.currentPopup == Config.SidebarPopup.None ? false : true
+                visible: root.sidebarEnabled && (radialTaskbar.isOpen || radialTaskbar.currentPopup != Config.SidebarPopup.None)
                 //WlrLayershell.layer: WlrLayer.Bottom
                 exclusionMode: ExclusionMode.Ignore //Ignore
                 color: Qt.rgba(0, 0, 0, 0)
@@ -45,6 +48,7 @@ Scope {
             PanelWindow {
                 id: radialTaskbar
                 screen: root.modelData
+                visible: root.sidebarEnabled
                 WlrLayershell.layer: isOpen || currentPopup != Config.SidebarPopup.None ? WlrLayer.Top : WlrLayer.Bottom
 
                 //WlrLayershell.layer: WlrLayer.Bottom
@@ -466,7 +470,9 @@ Scope {
 
                     hoverEnabled: true
                     onEntered: {
-                        radialTaskbar.isOpen = true;
+                        if (root.raiseOnHover) {
+                            radialTaskbar.isOpen = true;
+                        }
                     }
                 }
                 MouseArea {
@@ -479,6 +485,22 @@ Scope {
                     onEntered: {
                         if (radialTaskbar.currentPopup == Config.SidebarPopup.None) {
                             radialTaskbar.isOpen = false;
+                        }
+                    }
+                }
+            }
+            // Lets you raise/lower the sidebar with a hyprland keybind, see the
+            // toggleBars command in hyprland.lua.
+            Scope {
+                id: sidebarIpc
+                property string screenName: radialTaskbar.screen.name
+                IpcHandler {
+                    target: "sidebar_" + sidebarIpc.screenName
+                    function toggle() {
+                        if (radialTaskbar.isOpen || radialTaskbar.currentPopup != Config.SidebarPopup.None) {
+                            radialTaskbar.closeAllPopups();
+                        } else {
+                            radialTaskbar.isOpen = true;
                         }
                     }
                 }

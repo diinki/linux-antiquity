@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick.Controls.Basic
@@ -19,9 +20,12 @@ Scope {
         Item {
             id: root
             required property var modelData
+            property bool bottomBarEnabled: Config.radialBarSetting(modelData.name, "enableBottomBar")
+            property bool raiseOnHover: Config.radialBarSetting(modelData.name, "raiseOnHover")
             PanelWindow {
                 id: radialTaskbar
                 screen: root.modelData
+                visible: root.bottomBarEnabled
                 WlrLayershell.layer: isOpen ? WlrLayer.Top : WlrLayer.Bottom
                 exclusionMode: ExclusionMode.Ignore //Ignore
                 WlrLayershell.namespace: "diinki_celestialantiquity:bars"
@@ -73,7 +77,9 @@ Scope {
                         width: parent.width
                         hoverEnabled: true
                         onEntered: {
-                            radialTaskbar.isOpen = true;
+                            if (root.raiseOnHover) {
+                                radialTaskbar.isOpen = true;
+                            }
                         }
                     }
 
@@ -393,6 +399,18 @@ Scope {
                                 }
                             }
                         }
+                    }
+                }
+            }
+            // Lets you raise/lower the bottom bar with a hyprland keybind, see the
+            // toggleBars command in hyprland.lua.
+            Scope {
+                id: bottomBarIpc
+                property string screenName: radialTaskbar.screen.name
+                IpcHandler {
+                    target: "bottombar_" + bottomBarIpc.screenName
+                    function toggle() {
+                        radialTaskbar.isOpen = !radialTaskbar.isOpen;
                     }
                 }
             }
