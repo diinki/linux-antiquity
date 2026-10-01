@@ -9,7 +9,7 @@ NC='\033[0m'
 USERNAME=$(whoami)
 BACKUP_DIR="$HOME/${USERNAME}_BACKUPS"
 CONFIG_DIR="$HOME/.config"
-THEME_CONFIGS="./configs"
+THEME_CONFIGS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/configs"
 
 DEPS=("hyprpaper" "nemo" "kitty" "quickshell" "hyprshot" "mako" "jq" "socat")
 WINDOW_MANAGER="Hyprland"
